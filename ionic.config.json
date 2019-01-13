@@ -1,5 +1,7 @@
 {
   "name": "ionic-riddle-game",
-  "integrations": {},
+  "integrations": {
+    "cordova": {}
+  },
   "type": "ionic-angular"
 }

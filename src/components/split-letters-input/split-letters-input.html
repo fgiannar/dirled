@@ -1,0 +1,14 @@
+<!-- Generated template for the SplitLettersInputComponent component -->
+<ion-grid>
+    <ion-row>
+        <ion-col *ngFor="let letter of letters; let j = index;">
+            <ion-input
+                type="text"
+                class="answer"
+                [(ngModel)]="answers"
+                ngControl="answers"
+                (ngModelChange)="answers = $event.toUpperCase()"
+            ></ion-input>
+        </ion-col>
+    </ion-row>
+</ion-grid>

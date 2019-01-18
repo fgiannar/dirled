@@ -34,3 +34,6 @@ $RECYCLE.BIN/
 Thumbs.db
 UserInterfaceState.xcuserstate
 riddles.json
+
+resources/android/
+resources/ios/

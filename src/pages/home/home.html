@@ -1,50 +1,36 @@
-<ion-content padding="true">
+<ion-content padding="true" text-center>
 
-    <ion-slides #slides>
 
-        <ion-slide *ngFor="let question of questions; let i = index;">
+    <div *ngIf="!end && level" margin-top>
 
-            <h3>LEVEL {{level}}</h3>
+        <h3>LEVEL {{level}}</h3>
 
-            <!-- <flash-card [isFlipped]="question.flashCardFlipped">
-                <div class="flash-card-front" [innerHTML]="question.flashCardFront"></div>
-                <div class="flash-card-back" [innerHTML]="question.flashCardBack"></div>
-            </flash-card> -->
+        <p>{{currentQuestion.questionText}}</p>
 
-            <p>{{question.questionText}}</p>
+        <form (ngSubmit)="submitAnswer(answer)">
 
-            <ion-input
-                *ngIf="level == (i+1) && !hasAnswered"
-                type="text"
-                class="riddle-input"
-                text-center
-                autofocus
-                [(ngModel)]="answer"
-                ngControl="answer"
-                (ngModelChange)="answer = $event.toUpperCase()"
-                riddle-input-validator="true"
-            ></ion-input>
-            <!-- Dummy input for re-rendering hack to replace real one while it's re-rendering
-                and avoid flickering.-->
-            <ion-input
-                *ngIf="hasAnswered"
-                type="text"
-                class="riddle-input"
-                readonly
+          <ion-input
+            type="text"
+            class="riddle-input"
+            text-center
+            [(ngModel)]="answer"
+            [ngModelOptions]="{standalone: true}"
+            ngControl="answer"
+            (ngModelChange)="answer = $event.toUpperCase()"
             ></ion-input>
 
-            <button ion-button outline margin-top color="dark" (click)="submitAnswer(answer, question)">DIRLED</button>
+          <button ion-button outline margin-top color="dark" type="submit">DIRLED</button>
 
-        </ion-slide>
+        </form>
 
-        <ion-slide>
-            <h2>The end.</h2>
-            <p margin-top>...Or the beginning of a beautifull friendship.</p>
+    </div>
 
-            <button (click)="restartQuiz()" ion-button outline margin-top color="dark">Start Again</button>
+    <div *ngIf="end" margin-top>
+        <h2>The end.</h2>
+        <p margin-top>...Or the beginning of a beautifull friendship.</p>
 
-        </ion-slide>
+        <button (click)="restartQuiz()" ion-button outline margin-top color="dark">Start Again</button>
 
-    </ion-slides>
+    </div>
 
 </ion-content>

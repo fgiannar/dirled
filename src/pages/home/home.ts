@@ -1,7 +1,8 @@
-import { Component, ViewChild } from '@angular/core';
+import { Component } from '@angular/core';
 import { NavController } from 'ionic-angular';
 import { DataProvider } from '../../providers/data/data';
 import { AppRate } from '@ionic-native/app-rate';
+import { Storage } from '@ionic/storage';
 
 @Component({
   selector: 'page-home',
@@ -9,69 +10,63 @@ import { AppRate } from '@ionic-native/app-rate';
 })
 export class HomePage {
 
-  @ViewChild('slides') slides: any;
-
-  hasAnswered: boolean = false;
-  level: number = 1;
+  level: number;
   totalLevels: number;
 
-  slideOptions: any;
   questions: any;
+  currentQuestion: any;
+  end: boolean = false;
 
   answer: string = '';
 
-  constructor(public navCtrl: NavController, public dataService: DataProvider, private appRate: AppRate) {
+  constructor(public navCtrl: NavController, public dataService: DataProvider, private appRate: AppRate, private storage: Storage) {
 
   }
 
   ionViewDidLoad() {
 
-    this.slides.lockSwipes(true);
-
     this.dataService.load().then((data) => {
       this.questions = data;
       this.totalLevels = this.questions.length;
+      console.log('Total levels', this.totalLevels);
+      this.storage.get('level').then((level) => {
+        console.log('Your level is', level);
+        this.setLevel(level || 1);
+      });
+
     });
-
   }
 
-  nextSlide() {
-    this.slides.lockSwipes(false);
-    this.slides.slideNext();
-    this.slides.lockSwipes(true);
-  }
-
-  nextLevel() {
+  setLevel(l) {
     this.answer = '';
-    this.level++;
-    this.nextSlide();
+    this.level = l;
+    this.storage.set('level', this.level);
 
-    // Last Slide
-    if (this.slides.isEnd())
-      setTimeout(() => {
-        this.appRate.promptForRating(true);
-      }, 2000);
+    if (this.totalLevels == this.level - 1)
+      return this.endGame();
+
+    this.currentQuestion = this.questions[this.level-1]
   }
 
-  submitAnswer(answer, question) {
-    if (answer == question.answer.toUpperCase( )) {
-      this.nextLevel();
+  submitAnswer(answer) {
+    if (answer == this.currentQuestion.answer.toUpperCase( )) {
+      return this.setLevel(this.level + 1);
     }
 
-    // Major hack to re-render input and apply autofocus.
-    this.hasAnswered = true;
+    this.answer = '';
+  }
+
+  endGame() {
+    this.end = true;
+
     setTimeout(() => {
-      this.hasAnswered = false;
-      this.answer = '';
-      return;
-    },1);
+      this.appRate.promptForRating(true);
+    }, 2000);
   }
 
   restartQuiz() {
-    this.level = 1;
-    this.slides.lockSwipes(false);
-    this.slides.slideTo(0, 1000);
-    this.slides.lockSwipes(true);
+    this.end = false;
+    this.setLevel(1);
   }
 
 }
